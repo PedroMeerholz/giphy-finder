@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? text;
+  int offset = 0;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _HomePageState extends State<HomePage> {
                 onSubmitted: (text) {
                   setState(() {
                     this.text = text;
+                    offset = 0;
                   });
                 },
               ),
@@ -91,9 +93,9 @@ class _HomePageState extends State<HomePage> {
                         }
                     }
                   },
-                  future: text == null
-                      ? TrendRequest().trendGifs()
-                      : SearchRequest(text!).searchGifs(),
+                  future: text == null || text!.isEmpty
+                      ? TrendRequest(offset.toString()).trendGifs()
+                      : SearchRequest(text!, offset.toString()).searchGifs(),
                 ),
               ),
             ],
@@ -101,6 +103,14 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  int _getGridItemCount(List list) {
+    if (text == null) {
+      return list.length;
+    } else {
+      return list.length + 1;
+    }
   }
 
   Widget createGifTable(BuildContext context, AsyncSnapshot snapshot) {
@@ -111,13 +121,39 @@ class _HomePageState extends State<HomePage> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: snapshot.data['data'].length,
+      itemCount: _getGridItemCount(snapshot.data['data']),
       itemBuilder: (context, index) {
-        return GestureDetector(
-          child: Image.network(
-            snapshot.data['data'][index]['images']['fixed_height']['url'],
-          ),
-        );
+        if (text == null || index < snapshot.data['data'].length) {
+          return GestureDetector(
+            child: Image.network(
+              snapshot.data['data'][index]['images']['fixed_height']['url'],
+            ),
+          );
+        } else {
+          return GestureDetector(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      offset += 25;
+                    });
+                  },
+                ),
+                const Text(
+                  'Mais GIFs...',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ],
+            ),
+          );
+        }
       },
     );
   }
