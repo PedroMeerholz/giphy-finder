@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:giphy_finder/request/search_request.dart';
+import 'package:giphy_finder/request/trend_request.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,11 +12,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // SearchRequest searchRequest = SearchRequest('dogs', '20');
-    // Future<Map> response = searchRequest.searchGifs();
-    // response.then((map) {
-    //   print(map);
-    // });
   }
 
   @override
@@ -34,8 +29,8 @@ class _HomePageState extends State<HomePage> {
         body: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
-            children: const [
-              TextField(
+            children: [
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Pesquise um GIF',
                   labelStyle: TextStyle(color: Colors.white),
@@ -54,10 +49,66 @@ class _HomePageState extends State<HomePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              Expanded(
+                child: FutureBuilder(
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Container(
+                          width: 200,
+                          height: 200,
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.red),
+                            strokeWidth: 5,
+                          ),
+                        );
+                      case ConnectionState.none:
+                        return Container(
+                          width: 200,
+                          height: 200,
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 5,
+                          ),
+                        );
+                      default:
+                        if (snapshot.hasError) {
+                          return Container();
+                        } else {
+                          return createGifTable(context, snapshot);
+                        }
+                    }
+                  },
+                  future: TrendRequest().trendGifs(),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget createGifTable(BuildContext context, AsyncSnapshot snapshot) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(10),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: snapshot.data['data'].length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          child: Image.network(
+            snapshot.data['data'][index]['images']['fixed_height']['url'],
+          ),
+        );
+      },
     );
   }
 }
