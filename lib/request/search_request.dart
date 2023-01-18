@@ -1,17 +1,19 @@
 import 'dart:convert';
 
-import 'package:giphy_finder/request/request.dart';
 import 'package:http/http.dart' as http;
 
-class SearchRequest extends Request {
-  SearchRequest(super.search, super.offset);
+class SearchRequest {
+  SearchRequest(this._search, this._offset);
+
+  String _search;
+  String _offset;
 
   Future<Map> searchGifs() async {
     Map<String, String> apiParams = {
       'api_key': 'BSkGxzPR0dcyeP526vb7xtocV3BT9BLu',
-      'q': super.returnSearchValue,
+      'q': _search,
       'limit': '50',
-      'offset': super.returnOffsetValue,
+      'offset': _offset,
       'rating': 'g',
       'lang': 'en'
     };
