@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_finder/request/search_request.dart';
 import 'package:giphy_finder/request/trend_request.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,6 +10,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? text;
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +33,8 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'Pesquise um GIF',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
@@ -43,11 +46,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                 ),
                 textAlign: TextAlign.center,
+                onSubmitted: (text) {
+                  setState(() {
+                    this.text = text;
+                  });
+                },
               ),
               Expanded(
                 child: FutureBuilder(
@@ -83,7 +91,9 @@ class _HomePageState extends State<HomePage> {
                         }
                     }
                   },
-                  future: TrendRequest().trendGifs(),
+                  future: text == null
+                      ? TrendRequest().trendGifs()
+                      : SearchRequest(text!).searchGifs(),
                 ),
               ),
             ],

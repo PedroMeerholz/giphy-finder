@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SearchRequest {
-  SearchRequest(this._search, this._offset);
+  SearchRequest(this._search);
 
   String _search;
-  String _offset;
+  String _offset = '25';
 
   Future<Map> searchGifs() async {
     Map<String, String> apiParams = {
