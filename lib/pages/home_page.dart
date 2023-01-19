@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_finder/pages/gif_page.dart';
 import 'package:giphy_finder/request/search_request.dart';
 import 'package:giphy_finder/request/trend_request.dart';
 
@@ -128,6 +129,14 @@ class _HomePageState extends State<HomePage> {
             child: Image.network(
               snapshot.data['data'][index]['images']['fixed_height']['url'],
             ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return GifPage(snapshot.data['data'][index]);
+                }),
+              );
+            },
           );
         } else {
           return GestureDetector(
