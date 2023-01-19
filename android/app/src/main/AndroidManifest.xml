@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.giphy_finder">
    <application
-        android:label="giphy_finder"
+        android:label="Giphy Finder"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
